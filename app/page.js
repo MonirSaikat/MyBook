@@ -1,10 +1,24 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+import AddNewWord from '@/components/AddNewWord';
+import { getDictionary } from '@/lib/mongodb/dictionary'
 
-export default function Home() {
+async function fetchDictionary() {
+  const { dictionary } = await getDictionary();
+  if (!dictionary) throw new Error('Failed to fetch dictionary')
+  return dictionary;
+}
+
+export default async function Home() {
+  const dictionary = await fetchDictionary();
+
   return (
     <main>
-      <h1>Your next app</h1>
+      <AddNewWord />
+
+      <ul className="list-group">
+        {dictionary.map(word => (
+          <li className="list-group-item">{word.en} : {word.bn}</li>
+        ))}
+      </ul>
     </main>
   )
 }
